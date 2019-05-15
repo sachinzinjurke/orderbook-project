@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.cs.core.Order;
 import com.cs.core.OrderBook;
+import com.cs.order.constants.Cache;
 import com.cs.order.utils.InitializerUtils;
 
 @Component
@@ -29,10 +30,10 @@ public class OrderBookInitializer implements ApplicationListener<ContextRefreshe
 		
 		logger.info("############Application context initialized############");	
 		logger.info("###########Pre-Loading Instruments with orders#########");
-		OrderBook book=instrumentMap.get(1);
+		OrderBook book=Cache.INSTRUMENT_CACHE.get(1);
 		logger.info("$$$$$$$$$$book " + book);
 		
-		instrumentMap.entrySet().stream().forEach(entry->System.out.println(entry));
+	//	instrumentMap.entrySet().stream().forEach(entry->System.out.println(entry));
 		/*
 		 * String[] beans = event.getApplicationContext().getBeanDefinitionNames();
 		 * Arrays.sort(beans); for (String bean : beans) { logger.info(bean); }
@@ -42,14 +43,16 @@ public class OrderBookInitializer implements ApplicationListener<ContextRefreshe
 			return InitializerUtils.createRandomOrder();
 		};
 		
-		Stream.generate(orderSupplier).mapToInt(o->o.getInstrumentId()).peek((orderInstruId)->{
+		Stream.generate(orderSupplier).peek((orderInstruId)->{
 			logger.info("Processing order :: "+ orderInstruId);
-		})
+		}).limit(10)
 		.forEach((order)->{
-			logger.info("###########obook#########",instrumentMap.get(order));
+			logger.info("###########Cached Book#########",Cache.INSTRUMENT_CACHE.get(order.getInstrumentId()).getOrders().add(order));
+			//logger.info("###########Cached Book#########",instrumentMap.get(order.getInstrumentId()).getOrders().add(order));
 				});
 		logger.info("###########Pre-Loading Instruments done#########");
 		logger.info("###########Orders Loaded Into OrderBook#########");
+		Cache.INSTRUMENT_CACHE.entrySet().stream().forEach(entry->System.out.println(entry));
 		//instrumentMap.entrySet().stream().forEach(entry->System.out.println(entry));
 	}
 

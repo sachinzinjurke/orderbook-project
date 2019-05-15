@@ -1,9 +1,0 @@
-com\cs\core\Instrument.class
-com\cs\core\LimitOrder.class
-com\cs\constants\OrderBookStatusType.class
-com\cs\core\MarketOrder.class
-com\cs\core\Order.class
-com\cs\core\Execution.class
-com\cs\core\OrderBook.class
-com\cs\orderbook\App.class
-com\cs\constants\OrderType.class

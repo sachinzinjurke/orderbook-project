@@ -8,8 +8,8 @@ import com.cs.constants.OrderBookStatusType;
 
 public class OrderBook {
 
-	private List<Order> orders;
-	private OrderBookStatusType orderBookStatusType;
+	private List<Order> orders=new ArrayList<Order>();
+	private OrderBookStatusType orderBookStatusType=OrderBookStatusType.OPEN;
 	
 	private Execution execution;
 	
@@ -17,7 +17,7 @@ public class OrderBook {
 		return orders;
 	}
 	public void setOrders(List<Order> orders) {
-		this.orders = new ArrayList<Order>();
+		this.orders = orders;
 	}
 	public OrderBookStatusType getOrderBookStatusType() {
 		return orderBookStatusType;

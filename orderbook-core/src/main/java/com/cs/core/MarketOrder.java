@@ -14,9 +14,8 @@ public class MarketOrder extends Order{
 	public String toString() {
 		return "MarketOrder [orderType=" + orderType + ", getOrderId()=" + getOrderId() + ", getQuantity()="
 				+ getQuantity() + ", getEntryDate()=" + getEntryDate() + ", getInstrumentId()=" + getInstrumentId()
-				+ ", getPrice()=" + getPrice() + ", getValidOrder()=" + getValidOrder() + ", getClass()=" + getClass()
-				+ ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
+				+ ", getPrice()=" + getPrice() + ", getValidOrder()=" + getValidOrder() + "]";
 	}
-
+	
 	
 }
