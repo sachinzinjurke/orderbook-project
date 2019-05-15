@@ -5,6 +5,14 @@ public class Instrument {
 	private int instrumentId;
 	private OrderBook ordreBook;
 	
+	public Instrument() {
+		
+	}
+	
+	public Instrument(int instrumentId,OrderBook ordreBook) {
+		this.instrumentId=instrumentId;
+		this.ordreBook=ordreBook;
+	}
 	public int getInstrumentId() {
 		return instrumentId;
 	}

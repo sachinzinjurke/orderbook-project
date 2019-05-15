@@ -10,8 +10,7 @@
         http://www.springframework.org/schema/util
         http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<bean id="xmlStringBean1" class="java.lang.String">
-		<constructor-arg value="stringBean1" />
+	<bean id="instrumentDAO" class="com.cs.order.dao.InstrumentDaoImpl">
 	</bean>
 
 	<bean id="xmlStringBean2" class="java.lang.String">

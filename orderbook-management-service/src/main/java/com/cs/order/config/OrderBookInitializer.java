@@ -1,7 +1,10 @@
 package com.cs.order.config;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Resource;
@@ -54,6 +57,13 @@ public class OrderBookInitializer implements ApplicationListener<ContextRefreshe
 		logger.info("###########Orders Loaded Into OrderBook#########");
 		Cache.INSTRUMENT_CACHE.entrySet().stream().forEach(entry->System.out.println(entry));
 		//instrumentMap.entrySet().stream().forEach(entry->System.out.println(entry));
+		
+		logger.info("sorting");
+		List<Order> collect = Cache.INSTRUMENT_CACHE.get(1).getOrders().stream().sorted(Comparator.comparing(Order::getQuantity)).collect(Collectors.toList());
+		//logger.info("sorted list " ,collect.get(0));
+		if(!collect.isEmpty()) {
+			logger.info("not empry " + collect);
+		}
 	}
 
 	private Order createRandomOrder() {

@@ -39,7 +39,7 @@ public class InitializerUtils {
 	}
 	public static Integer getRandomInstrumentIdInRange() {
 		int leftLimit = 1;
-	    int rightLimit = 4;
+	    int rightLimit = 5;
 	    int generatedInteger = leftLimit + (int) (new Random().nextFloat() * (rightLimit - leftLimit));
 		return generatedInteger;
 	}
