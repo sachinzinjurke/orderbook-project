@@ -13,10 +13,6 @@
 	<bean id="instrumentDAO" class="com.cs.order.dao.InstrumentDaoImpl">
 	</bean>
 
-	<bean id="xmlStringBean2" class="java.lang.String">
-		<constructor-arg value="stringBean2" />
-	</bean>
-
 	<util:map id="instrumentMap" scope="singleton"
 		map-class="java.util.HashMap">
 		<entry key="1" value-ref="orderBook"></entry>
@@ -27,5 +23,14 @@
 	<bean id="orderBook" class="com.cs.core.OrderBook" scope="singleton">
 		<property name="orderBookStatusType" value="OPEN" />
 	</bean>
-
+	<bean id="orderBookQueue" class="java.util.concurrent.LinkedBlockingQueue" autowire="byName">
+		<constructor-arg type="int" value="100"/>
+	</bean>
+	<bean id="orderBookService" class="com.cs.order.service.OrderBookService">
+		<constructor-arg ref="orderBookQueue"/>
+	</bean>
+	<bean id="orderBookProcessingThread" class="com.cs.order.callback.OrderBookProcessingThread">
+		<constructor-arg ref="orderBookQueue"/>
+	</bean>
+	
 </beans>

@@ -1,10 +1,10 @@
 package com.cs.order.config;
 
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Resource;
@@ -15,8 +15,10 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import com.cs.core.Instrument;
 import com.cs.core.Order;
 import com.cs.core.OrderBook;
+import com.cs.order.callback.OrderBookProcessingThread;
 import com.cs.order.constants.Cache;
 import com.cs.order.utils.InitializerUtils;
 
@@ -33,22 +35,12 @@ public class OrderBookInitializer implements ApplicationListener<ContextRefreshe
 		
 		logger.info("############Application context initialized############");	
 		logger.info("###########Pre-Loading Instruments with orders#########");
-		OrderBook book=Cache.INSTRUMENT_CACHE.get(1);
-		logger.info("$$$$$$$$$$book " + book);
-		
-	//	instrumentMap.entrySet().stream().forEach(entry->System.out.println(entry));
-		/*
-		 * String[] beans = event.getApplicationContext().getBeanDefinitionNames();
-		 * Arrays.sort(beans); for (String bean : beans) { logger.info(bean); }
-		 */
-		
 		Supplier<Order> orderSupplier= ()->{
 			return InitializerUtils.createRandomOrder();
 		};
-		
 		Stream.generate(orderSupplier).peek((orderInstruId)->{
 			logger.info("Processing order :: "+ orderInstruId);
-		}).limit(10)
+		}).limit(50)
 		.forEach((order)->{
 			logger.info("###########Cached Book#########",Cache.INSTRUMENT_CACHE.get(order.getInstrumentId()).getOrders().add(order));
 			//logger.info("###########Cached Book#########",instrumentMap.get(order.getInstrumentId()).getOrders().add(order));
@@ -56,14 +48,11 @@ public class OrderBookInitializer implements ApplicationListener<ContextRefreshe
 		logger.info("###########Pre-Loading Instruments done#########");
 		logger.info("###########Orders Loaded Into OrderBook#########");
 		Cache.INSTRUMENT_CACHE.entrySet().stream().forEach(entry->System.out.println(entry));
-		//instrumentMap.entrySet().stream().forEach(entry->System.out.println(entry));
+		OrderBookProcessingThread orderBookProcessingThread=(OrderBookProcessingThread)event.getApplicationContext().getBean("orderBookProcessingThread");
+		ExecutorService executorService=Executors.newSingleThreadExecutor();
+		executorService.submit(orderBookProcessingThread);
+		logger.info("Successfully submitted thread to service");
 		
-		logger.info("sorting");
-		List<Order> collect = Cache.INSTRUMENT_CACHE.get(1).getOrders().stream().sorted(Comparator.comparing(Order::getQuantity)).collect(Collectors.toList());
-		//logger.info("sorted list " ,collect.get(0));
-		if(!collect.isEmpty()) {
-			logger.info("not empry " + collect);
-		}
 	}
 
 	private Order createRandomOrder() {

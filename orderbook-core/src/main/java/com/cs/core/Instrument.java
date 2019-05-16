@@ -8,7 +8,6 @@ public class Instrument {
 	public Instrument() {
 		
 	}
-	
 	public Instrument(int instrumentId,OrderBook ordreBook) {
 		this.instrumentId=instrumentId;
 		this.ordreBook=ordreBook;
