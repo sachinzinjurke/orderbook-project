@@ -9,7 +9,7 @@ import com.cs.order.modal.OrderBookStatus;
 public interface InstrumentDAO {
 	
 	public List<Instrument>getAllInstruments();
-	public Optional<Instrument> getInstrument(int instrumentId);
+	public Instrument getInstrument(int instrumentId);
 	public boolean updateOrderBook(OrderBookStatus orderBookStatus);
 
 }

@@ -35,12 +35,8 @@ public class InstrumentController {
 	}
 	@GetMapping("/instruments/{id}")
 	public Instrument retrieveStudent(@PathVariable Integer id) {
-		Optional<Instrument> instrument=instrumentDAO.getInstrument(id);
-		if(instrument.isPresent()) {
-			return instrument.get();
-		}else {
-			return null;
-		}
+		Instrument instrument=instrumentDAO.getInstrument(id);
+		return instrument;
 	}
 	
 	@PostMapping("/instruments/orderbookstatus")
