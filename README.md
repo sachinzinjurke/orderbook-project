@@ -37,9 +37,32 @@ Assumption:
  
  #Project Flow:
  
+ Step-1:
+ User will submit the Order book close request through api given above. Depending upon the state of Order Book service will update the     state of order book. If user marks the state to CLOSE, Instrument will be added for order book processing flow.
+ 
+ Step-2:
+ Upon submission of Orderbook status, service create a Execution context for order book processing. Execution context wraps Instrument and Execution for performing further processing. Execution context is added to Blocking Queue.
+ 
+ Step-3:
+ OrderBookProcessingThread is continously listening to this blocking queue. Whenever it finds any data in queue it will poll the data in out case it's ExecutionContext. Execution context is passed to set of rules. Each rule is doing specific functionality to the order book processing. There are 5 such rules as below.
+ 
+ OrderValidityMarkerRule - Marks order validity on order price. Only LIMIT orders are taken care by this rules.By default all MARKET orders are marked invalid for Orderbook processing.
+ 
+ ValidBookDemandRule - Derives valid demand for the order book.
+ 
+ ExecutionAcceptanceRule - Decides whether new execution for the same orderbook should be accepted or not.
+ 
+ ExecutionQuantityLinearDistributionRule - If the execution quantity is less than the valid demand this rules comes into picture. It will divide the quantity to all orders by weighted ratio and further decides orderbook execution.
+ 
+ OrderBookExecutedMarkerRule - Marks the Order book as EXECUTED if previous rules decides that orderbook processing is  completed.
+ ValidBookDemandRule
+ 
+ 
+ Here is project flow diagram:
+ 
+ 
  https://github.com/sachinzinjurke/orderbook-project/blob/master/Orderbook%20Management%20Service
  
  
- https://github.com/sachinzinjurke/orderbook-project/blob/master/Untitled%20Diagram.png
  
 
