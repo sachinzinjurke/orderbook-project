@@ -13,42 +13,25 @@ Service is providing REST interface for user to do below things.
 Assumption:
 
 1. Service is dealing with 4 instruments and all are pre-configured during boot up from Instrument id 1 to 4 with empty Order book. 
-2. Once web application context is loaded predefined orders are loaded against random Instrument Orderbook. This is done to redule the          testing efforts.
+2. Once web application context is loaded predefined orders are loaded against random Instrument Orderbook. This is done to redule the          testing efforts. By default all order books status is OPEN.
 3. You can check the orders loaded against an Instrument by running the service locally and hitting the below endpoint.
 
     http://localhost:8080//instruments/4
     
-  {
-  "instrumentId": 4,
-  "ordreBook": {
-    "orders": [
-      {
-        "orderId": 8,
-        "quantity": 7,
-        "entryDate": "2019-05-18T18:30:03.343+0000",
-        "instrumentId": 4,
-        "price": 21.79,
-        "isValidOrder": null,
-        "allotedQuantity": 0,
-        "orderType": "LIMIT"
-      },
-      {
-        "orderId": 6,
-        "quantity": 8,
-        "entryDate": "2019-05-18T18:30:03.343+0000",
-        "instrumentId": 4,
-        "price": 10.21,
-        "isValidOrder": null,
-        "allotedQuantity": 0,
-        "orderType": "MARKET"
-      }
-      ],
-    "orderBookStatusType": "OPEN",
-    "executionCount": 0
-  }
-}
-      
+4. User can change the order book status from OPEN to CLOSE using below POST request.
+
+    http://localhost:8080/instruments/orderbookstatus
     
+    post body: 
+    Note: Order book status should be OPEN, CLOSE or EXECUTED
+    {
+	"instrumentId":"2",
+	"orderBookStatusType":"CLOSE"
+   }
    
-   
+ 5. If user want to know only LIMIT orders against a Instrument he can use below url
+ 
+    http://localhost:8080//instruments/getlimitorders/1
+    
+ 6. Order book Execution is kept constant for all executions and its quantity is set to 10 and price is 20.00 
 
