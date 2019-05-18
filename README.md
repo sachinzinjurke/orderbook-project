@@ -1,5 +1,5 @@
 # orderbook-project
-orderbook project
+
 
 Order book project is orderbook management service. Order book project is divided into two modules as below:
 1. orderbook-core - This module will hold all the core classes specific to order book service.
@@ -12,10 +12,14 @@ Service is providing REST interface for user to do below things.
 
 Assumption:
 
-A. Service is dealing with 4 instruments and all are pre-configured during boot up from Instrument id 1 to 4 with empty Order book. 
-B. Once web application context is loaded predefined orders are loaded against random Instrument Orderbook. This is done to redule the testing efforts.
-C. You can check the orders loaded against an Instrument by running the service locally and hitting the below endpoint.
+1. Service is dealing with 4 instruments and all are pre-configured during boot up from Instrument id 1 to 4 with empty Order book. 
+2. Once web application context is loaded predefined orders are loaded against random Instrument Orderbook. This is done to redule the          testing efforts.
+3. You can check the orders loaded against an Instrument by running the service locally and hitting the below endpoint.
 
     http://localhost:8080//instruments/4
+    
+    ![Alt text](relative/path/to/img.jpg?raw=true "Title")
+    
+   
    
 
