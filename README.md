@@ -63,6 +63,11 @@ Assumption:
  
  https://github.com/sachinzinjurke/orderbook-project/blob/master/Orderbook%20Management%20Service
  
+ #What is pending :
+ 
+ 1.Exception handling
+ 2. Unit Testing
+ 
  
  
 
