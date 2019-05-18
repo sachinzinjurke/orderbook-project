@@ -7,6 +7,7 @@ public class ExecutionContext {
 	private Integer validBookDemandQuantity;
 	private Boolean shouldAcceptExecution;
 	private Integer totalAllottedQtyToOrderBook=0;
+	private Boolean canMarkAsExecuted=false;
 	
 	public Execution getExecution() {
 		return execution;
@@ -39,6 +40,13 @@ public class ExecutionContext {
 	public void setTotalAllottedQtyToOrderBook(Integer totalAllottedQtyToOrderBook) {
 		this.totalAllottedQtyToOrderBook = totalAllottedQtyToOrderBook;
 	}
+	public Boolean getCanMarkAsExecuted() {
+		return canMarkAsExecuted;
+	}
+	public void setCanMarkAsExecuted(Boolean canMarkAsExecuted) {
+		this.canMarkAsExecuted = canMarkAsExecuted;
+	}
+	
 	
 	
 

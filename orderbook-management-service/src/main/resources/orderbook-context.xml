@@ -25,7 +25,7 @@
         <ref bean="validBookDemandRule" />
         <ref bean="executionAcceptanceRule" />
         <ref bean="executionQuantityLinearDistributionRule" />
-        <ref bean="orderBookStatusMarkerRule" />
+        <ref bean="orderBookExecutedMarkerRule" />
 	</util:list>
 	
 	<bean id="orderBookRuleCollection" class="com.cs.order.rules.OrderBookRuleCollection">
@@ -48,5 +48,5 @@
 	<bean id="validBookDemandRule" class="com.cs.order.rules.ValidBookDemandRule"/>
 	<bean id="executionAcceptanceRule" class="com.cs.order.rules.ExecutionAcceptanceRule"/>
 	<bean id="executionQuantityLinearDistributionRule" class="com.cs.order.rules.ExecutionQuantityLinearDistributionRule"/>    
-    <bean id="orderBookStatusMarkerRule" class="com.cs.order.rules.OrderBookStatusMarkerRule"/>
+    <bean id="orderBookExecutedMarkerRule" class="com.cs.order.rules.OrderBookExecutedMarkerRule"/>
 </beans>

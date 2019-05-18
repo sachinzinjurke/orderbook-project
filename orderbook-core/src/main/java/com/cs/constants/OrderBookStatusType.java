@@ -2,7 +2,7 @@ package com.cs.constants;
 
 public enum OrderBookStatusType {
 	
-	OPEN("OPEN"),CLOSE("CLOSE");
+	OPEN("OPEN"),CLOSE("CLOSE"),EXECUTED("EXECUTED");
 	
 	private String status;
 	

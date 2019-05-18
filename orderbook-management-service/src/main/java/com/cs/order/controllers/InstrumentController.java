@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cs.core.Execution;
 import com.cs.core.ExecutionContext;
 import com.cs.core.Instrument;
+import com.cs.core.Order;
 import com.cs.core.OrderBook;
 import com.cs.order.constants.Cache;
 import com.cs.order.dao.InstrumentDAO;
@@ -20,7 +21,6 @@ import com.cs.order.modal.OrderBookStatus;
 import com.cs.order.service.OrderBookService;
 
 @RestController
-//@RequestMapping(path = "/instruments")
 public class InstrumentController {
 	
 	@Autowired
@@ -34,11 +34,15 @@ public class InstrumentController {
 		return instrumentDAO.getAllInstruments();
 	}
 	@GetMapping("/instruments/{id}")
-	public Instrument retrieveStudent(@PathVariable Integer id) {
+	public Instrument getInstrument(@PathVariable Integer id) {
 		Instrument instrument=instrumentDAO.getInstrument(id);
 		return instrument;
 	}
-	
+	@GetMapping("/instruments/getlimitorders/{id}")
+	public  List<Order> getLimitOrders(@PathVariable Integer id) {
+		List<Order> limitOrders=instrumentDAO.getLimitOrders(id);
+		return limitOrders;
+	}
 	@PostMapping("/instruments/orderbookstatus")
 	  void updateOrderBook(@RequestBody OrderBookStatus orderBookStatus) {
 	    Boolean update= instrumentDAO.updateOrderBook(orderBookStatus);

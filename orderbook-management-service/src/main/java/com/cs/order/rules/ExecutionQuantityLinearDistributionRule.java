@@ -1,12 +1,15 @@
 package com.cs.order.rules;
 
 import java.text.DecimalFormat;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cs.core.ExecutionContext;
+import com.cs.core.Instrument;
+import com.cs.core.Order;
 
 public class ExecutionQuantityLinearDistributionRule implements OrderBookRule{
 
@@ -19,11 +22,10 @@ public class ExecutionQuantityLinearDistributionRule implements OrderBookRule{
 			logger.info("Processing linear quantity distribution");
 			if(executionContext.getValidBookDemandQuantity() > executionContext.getExecution().getQuantity()) {
 				if(executionContext.getInstrument().getOrdreBook().getExecutionCount() == 1) {
-					logger.info("Processing linear quantity distribution FIRST time");
+					logger.info("Processing linear quantity distribution FIRST time for VALID DEMAND {} : ",executionContext.getValidBookDemandQuantity());
 					distributeLinearlyToValidOrders(executionContext);	
 				}else {
-					logger.info("Processing linear quantity distribution NEXT time");
-					logger.info("Execution count :: {}",executionContext.getInstrument().getOrdreBook().getExecutionCount() );
+					logger.info("Processing linear quantity distribution NEXT time for VALID DEMAND {} : ",executionContext.getValidBookDemandQuantity());
 					distributeLinearlyToValidOrdersOnNextExecution(executionContext);
 				}
 				
@@ -42,13 +44,14 @@ public class ExecutionQuantityLinearDistributionRule implements OrderBookRule{
 			Integer validDemandCountQuantity =deriveTotalValidDemand(executionContext);
 			executionContext.getInstrument().getOrdreBook().getOrders().
 			stream()
+			.sorted(Comparator.comparing(Order::getQuantity).reversed())
 			.filter(p->p.getIsValidOrder())
 			.map(order->{
 				
-				double distributedQuantity=((order.getQuantity()*executionQuantity)/(double)validDemandCountQuantity);
+				double weightedOrderQuantity=((order.getQuantity()*executionQuantity)/(double)validDemandCountQuantity);
 				DecimalFormat df = new DecimalFormat("#.##"); 
-				Double formattedDistributedQuantity = Double.valueOf(df.format(distributedQuantity));
-				Integer qty=(int)Math.round((formattedDistributedQuantity));
+				Double formattedWeightedOrderQuantity = Double.valueOf(df.format(weightedOrderQuantity));
+				Integer qty=(int)Math.round((formattedWeightedOrderQuantity));
 				Integer totalAllottedQty=executionContext.getTotalAllottedQtyToOrderBook();
 				totalAllottedQty+=qty;
 				if(totalAllottedQty > executionQuantity) {
@@ -63,11 +66,10 @@ public class ExecutionQuantityLinearDistributionRule implements OrderBookRule{
 					executionContext.setTotalAllottedQtyToOrderBook(totalAllottedQty);
 					
 				}
-				//logger.info("Final Count :: Order id {}, totalAllottedQty:  {},executionQuantity: {}  ",order.getOrderId(),totalAllottedQty,executionQuantity);
-				//order.setAllotedQuantity(qty);
+				
 				return order;
 			})
-			.forEach(order->logger.info("**** Order Details Order id: {} ,Alloted Quantity: {}, Actual quantity: {},Instrument Id : {}, OrderBool Total Allotted Qty : {} ",order.getOrderId(),order.getAllotedQuantity(),order.getQuantity(),order.getInstrumentId(), executionContext.getTotalAllottedQtyToOrderBook()));
+			.forEach(order->logger.info("**** Order Details Order id: {} ,Alloted Quantity: {}, Actual quantity: {},Instrument Id : {}, OrderBook Total Allotted Qty : {} ",order.getOrderId(),order.getAllotedQuantity(),order.getQuantity(),order.getInstrumentId(), executionContext.getTotalAllottedQtyToOrderBook()));
 			
 		}catch(Exception ex) {
 			logger.error("Exception during first run ",ex);
@@ -92,42 +94,64 @@ public class ExecutionQuantityLinearDistributionRule implements OrderBookRule{
 			Integer validDemandCountQuantityOnNextExecution =deriveTotalValidDemandOnNextExecution(executionContext);
 			
 			if(validDemandCountQuantityOnNextExecution!=0) {
-				executionContext.getInstrument().getOrdreBook().getOrders().
+				executionContext.getInstrument().getOrdreBook().getOrders(). 
 				stream()
+				.sorted(Comparator.comparing(Order::getQuantity).reversed())
 				.filter(p->p.getIsValidOrder())
 				.map(order->{
-					Integer actualPendingallotmentQty=order.getQuantity()-order.getAllotedQuantity();
+					Integer pendingAllotmentQtyForOrder=order.getQuantity()-order.getAllotedQuantity();
 					
-					double distributedQuantity=((actualPendingallotmentQty*executionQuantity)/(double)validDemandCountQuantityOnNextExecution);
+					double weightedOrderQuantity=((pendingAllotmentQtyForOrder*executionQuantity)/(double)validDemandCountQuantityOnNextExecution);
 					DecimalFormat df = new DecimalFormat("#.##"); 
-					Double formattedDistributedQuantity = Double.valueOf(df.format(distributedQuantity));
-					Integer runAllottedQuantity=(int)Math.round((formattedDistributedQuantity));
+					Double formattedWeightedOrderQuantity = Double.valueOf(df.format(weightedOrderQuantity));
+					Integer currentRunAllottedQuanity=(int)Math.round((formattedWeightedOrderQuantity));
 					Integer totalAllottedQty=executionContext.getTotalAllottedQtyToOrderBook();
-					logger.info("actualPendingallotmentQty : {} , run allotted : {} ", actualPendingallotmentQty ,runAllottedQuantity);
-					totalAllottedQty+=runAllottedQuantity;
+					//logger.info("totalAllottedQty:{}, actualPendingallotmentQty : {} , current run: {} ",totalAllottedQty, pendingAllotmentQtyForOrder ,currentRunAllottedQuanity);
+					totalAllottedQty+=currentRunAllottedQuanity;
 					if(totalAllottedQty > executionQuantity) {
-						//logger.info("Rule failed :: Order id {}, totalAllottedQty:  {},executionQuantity: {}  ",order.getOrderId(),totalAllottedQty,executionQuantity);
-						runAllottedQuantity=runAllottedQuantity-1;
-						totalAllottedQty=totalAllottedQty-1;
-						order.setAllotedQuantity(order.getAllotedQuantity() + runAllottedQuantity);
+						logger.info("***********Block-0 ");
+						logger.info("***totalAllottedQty : {} , current run allotted : {} , executionQuantity {} ", totalAllottedQty ,currentRunAllottedQuanity,executionQuantity);
+						Integer extraAllot=totalAllottedQty-executionQuantity;
+						if(extraAllot==0) {
+							logger.info("***Not allocating any quantity,already allocated completely");
+						}else {
+							logger.info("***pendingAllotmentQtyForOrder : {} , currentRunAllottedQuanity: {} , extraAllot {}, totalAllottedQty{} ", pendingAllotmentQtyForOrder ,currentRunAllottedQuanity,extraAllot,totalAllottedQty);
+							if(pendingAllotmentQtyForOrder > (currentRunAllottedQuanity-extraAllot)) {
+								logger.info("setting allocated quantity {} for OID {}",(currentRunAllottedQuanity-extraAllot),order.getOrderId());
+								order.setAllotedQuantity(order.getAllotedQuantity() + (currentRunAllottedQuanity-extraAllot));
+								
+							}
+							
+						}
+						//order.setAllotedQuantity(order.getAllotedQuantity() + currentRunAllottedQuanity);
+						Boolean canMarkOrderBookAsExecuted = canMarkOrderBookAsExecuted(executionContext);
+						if(canMarkOrderBookAsExecuted) {
+							executionContext.setCanMarkAsExecuted(true);
+						}
 					}else {
-						//logger.info("Rule Passed :: Order id {}, totalAllottedQty:  {},executionQuantity: {}  ",order.getOrderId(),totalAllottedQty,executionQuantity);
+						
 						executionContext.setTotalAllottedQtyToOrderBook(totalAllottedQty);
-						if((order.getQuantity()-order.getAllotedQuantity() >=runAllottedQuantity)) {
-							order.setAllotedQuantity(order.getAllotedQuantity() + runAllottedQuantity);
-						}else if(runAllottedQuantity > actualPendingallotmentQty) {
-							order.setAllotedQuantity(order.getAllotedQuantity() + actualPendingallotmentQty);
+						if((order.getQuantity()-order.getAllotedQuantity() >=currentRunAllottedQuanity)) {
+							logger.info("**block-1");
+							order.setAllotedQuantity(order.getAllotedQuantity() + currentRunAllottedQuanity);
+							Boolean canMarkOrderBookAsExecuted = canMarkOrderBookAsExecuted(executionContext);
+							if(canMarkOrderBookAsExecuted) {
+								executionContext.setCanMarkAsExecuted(true);
+							}
+						}else if(currentRunAllottedQuanity > pendingAllotmentQtyForOrder) {
+							logger.info("**block-2");
+							order.setAllotedQuantity(order.getAllotedQuantity() + pendingAllotmentQtyForOrder);
+							Boolean canMarkOrderBookAsExecuted = canMarkOrderBookAsExecuted(executionContext);
+							if(canMarkOrderBookAsExecuted) {
+								executionContext.setCanMarkAsExecuted(true);
+							}
 						}
 						
 						
 					}
-					//logger.info("Final Count :: Order id {}, totalAllottedQty:  {},executionQuantity: {}  ",order.getOrderId(),totalAllottedQty,executionQuantity);
-					//order.setAllotedQuantity(qty);
-					//Integer nextRunAlltment=order.getAllotedQuantity()+qty;
-					//order.setAllotedQuantity(nextRunAlltment);
 					return order;
 				})
-				.forEach(order->logger.info("****Next Execution Order Details Order id: {} ,Alloted Quantity: {}, Actual quantity: {},Instrument Id : {}, OrderBool Total Allotted Qty : {} ",order.getOrderId(),order.getAllotedQuantity(),order.getQuantity(),order.getInstrumentId(), executionContext.getTotalAllottedQtyToOrderBook()));
+				.forEach(order->logger.info("****NEXT OID: {} ,Alloted qty: {}, Actual Qty: {},Instru : {}, OrderBoolTotalAllottedQty : {} ",order.getOrderId(),order.getAllotedQuantity(),order.getQuantity(),order.getInstrumentId(), executionContext.getTotalAllottedQtyToOrderBook()));
 			}else {
 				logger.info("***************ORDER IS GOOD TO GO TO MARK AS EXECUTED##############################33");
 			}
@@ -137,7 +161,33 @@ public class ExecutionQuantityLinearDistributionRule implements OrderBookRule{
 		}
 			
 	}
+	/*
+	 * In case of partial order quantity allotment, execution quanity > actual order demand quantity we can decide 
+	 * OrderBook excution as EXECUTED
+	 */
 	
+	private Boolean canMarkOrderBookAsExecuted(ExecutionContext executionContext) {
+		Integer totalOrdersAllottedQty=getAllottedOrderCount(executionContext.getInstrument());
+		if(totalOrdersAllottedQty==executionContext.getValidBookDemandQuantity()) {
+			return true;
+		}else {
+			return false;
+		}
+		
+	}
+
+	private Integer getAllottedOrderCount(Instrument instrument) {
+		Integer totalAllotedQuantity = instrument.getOrdreBook().getOrders().
+		stream()
+		.filter(p->p.getIsValidOrder())
+		.map(order->{
+			Integer allottedqty=order.getAllotedQuantity();
+			return allottedqty;
+		})
+		.collect(Collectors.summingInt(Integer::intValue));
+		return totalAllotedQuantity;
+	}
+
 	private Integer deriveTotalValidDemandOnNextExecution(ExecutionContext executionContext) {
 		Integer validDemandCountQuantityOnNextExecution = executionContext.getInstrument().getOrdreBook().getOrders().
 				stream()

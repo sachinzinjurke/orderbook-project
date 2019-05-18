@@ -18,6 +18,6 @@ public enum OrderType {
 	public static OrderType getRandomOrderType() {
         Random random = new Random();
         //return values()[random.nextInt(values().length)];
-        return OrderType.LIMIT;
+       return OrderType.LIMIT;
     }
 }
