@@ -18,7 +18,36 @@ Assumption:
 
     http://localhost:8080//instruments/4
     
-    ![Alt text](relative/path/to/img.jpg?raw=true "Title")
+  {
+  "instrumentId": 4,
+  "ordreBook": {
+    "orders": [
+      {
+        "orderId": 8,
+        "quantity": 7,
+        "entryDate": "2019-05-18T18:30:03.343+0000",
+        "instrumentId": 4,
+        "price": 21.79,
+        "isValidOrder": null,
+        "allotedQuantity": 0,
+        "orderType": "LIMIT"
+      },
+      {
+        "orderId": 6,
+        "quantity": 8,
+        "entryDate": "2019-05-18T18:30:03.343+0000",
+        "instrumentId": 4,
+        "price": 10.21,
+        "isValidOrder": null,
+        "allotedQuantity": 0,
+        "orderType": "MARKET"
+      }
+      ],
+    "orderBookStatusType": "OPEN",
+    "executionCount": 0
+  }
+}
+      
     
    
    
