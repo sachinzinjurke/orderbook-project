@@ -17,10 +17,11 @@ public class LimitOrder extends Order{
 	public String toString() {
 		return "LimitOrder [orderType=" + orderType + ", getOrderId()=" + getOrderId() + ", getQuantity()="
 				+ getQuantity() + ", getEntryDate()=" + getEntryDate() + ", getInstrumentId()=" + getInstrumentId()
-				+ ", getPrice()=" + getPrice() + ", getValidOrder()=" + getValidOrder() + "]";
+				+ ", getPrice()=" + getPrice() + ", getValidOrder()=" + getIsValidOrder() + "]";
 	}
 
-	
-
+	public OrderType getOrderType() {
+		return this.orderType;
+	}
 	
 }

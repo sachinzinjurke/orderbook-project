@@ -2,6 +2,8 @@ package com.cs.core;
 
 import java.util.Date;
 
+import com.cs.constants.OrderType;
+
 public abstract class Order {
 	
 	private Integer orderId;
@@ -9,7 +11,8 @@ public abstract class Order {
 	private Date entryDate;
 	private Integer instrumentId;
 	private Double price;
-	private Boolean validOrder;
+	private Boolean isValidOrder;
+	private Integer allotedQuantity=0;
 	
 	public Order(Integer orderId, Integer quantity, Date entryDate, Integer instrumentId, Double price) {
 		super();
@@ -49,13 +52,21 @@ public abstract class Order {
 	public void setPrice(Double price) {
 		this.price = price;
 	}
-	public Boolean getValidOrder() {
-		return validOrder;
+	
+	public Boolean getIsValidOrder() {
+		return isValidOrder;
 	}
-	public void setValidOrder(Boolean validOrder) {
-		this.validOrder = validOrder;
+	public void setIsValidOrder(Boolean isValidOrder) {
+		this.isValidOrder = isValidOrder;
 	}
 	
+	public Integer getAllotedQuantity() {
+		return allotedQuantity;
+	}
+	public void setAllotedQuantity(Integer allotedQuantity) {
+		this.allotedQuantity = allotedQuantity;
+	}
 	
+	public abstract OrderType getOrderType();
 
 }

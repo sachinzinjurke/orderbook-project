@@ -20,6 +20,17 @@
 		<entry key="3" value-ref="orderBook"></entry>
 		<entry key="4" value-ref="orderBook"></entry>
 	</util:map>
+	<util:list id="orderBookRuleList" value-type="java.util.ArrayList" scope="singleton">
+		<ref bean="orderValidityMarkerRule" />
+        <ref bean="validBookDemandRule" />
+        <ref bean="executionAcceptanceRule" />
+        <ref bean="executionQuantityLinearDistributionRule" />
+        <ref bean="orderBookStatusMarkerRule" />
+	</util:list>
+	
+	<bean id="orderBookRuleCollection" class="com.cs.order.rules.OrderBookRuleCollection">
+		<property name="orderBookRuleList" ref="orderBookRuleList"></property>		
+	</bean>
 	<bean id="orderBook" class="com.cs.core.OrderBook" scope="singleton">
 		<property name="orderBookStatusType" value="OPEN" />
 	</bean>
@@ -31,6 +42,11 @@
 	</bean>
 	<bean id="orderBookProcessingThread" class="com.cs.order.callback.OrderBookProcessingThread">
 		<constructor-arg ref="orderBookQueue"/>
+		<property name="orderBookRuleCollection" ref="orderBookRuleCollection"/>
 	</bean>
-	
+	<bean id="orderValidityMarkerRule" class="com.cs.order.rules.OrderValidityMarkerRule"/>
+	<bean id="validBookDemandRule" class="com.cs.order.rules.ValidBookDemandRule"/>
+	<bean id="executionAcceptanceRule" class="com.cs.order.rules.ExecutionAcceptanceRule"/>
+	<bean id="executionQuantityLinearDistributionRule" class="com.cs.order.rules.ExecutionQuantityLinearDistributionRule"/>    
+    <bean id="orderBookStatusMarkerRule" class="com.cs.order.rules.OrderBookStatusMarkerRule"/>
 </beans>

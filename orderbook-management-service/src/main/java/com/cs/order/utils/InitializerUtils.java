@@ -32,7 +32,7 @@ public class InitializerUtils {
 	}
 	
 	public static Integer getRandomQuantityInRange() {
-		int leftLimit = 1;
+		int leftLimit = 5;
 	    int rightLimit = 10;
 	    int generatedInteger = leftLimit + (int) (new Random().nextFloat() * (rightLimit - leftLimit));
 		return generatedInteger;

@@ -44,11 +44,10 @@ public class InstrumentController {
 	    Boolean update= instrumentDAO.updateOrderBook(orderBookStatus);
 	    if(update) {
 	    	ExecutionContext executionContext=new ExecutionContext();
-	    	OrderBook orderBook = Cache.INSTRUMENT_CACHE.get(orderBookStatus.getInstrumentId());
-	    	Instrument instrument=new Instrument(orderBookStatus.getInstrumentId(),orderBook);
+	    	Instrument instrument = Cache.INSTRUMENT_CACHE_MAP.get(orderBookStatus.getInstrumentId());
 	    	executionContext.setExecution(new Execution());
 	    	executionContext.setInstrument(instrument);
-	    	orderBookService.addInstrumentForProcessing(executionContext);
+	    	orderBookService.addOrderBookForProcessing(executionContext);
 	    }
 	  }
 }

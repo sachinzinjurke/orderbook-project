@@ -10,8 +10,8 @@ public class OrderBook {
 
 	private List<Order> orders=new ArrayList<Order>();
 	private OrderBookStatusType orderBookStatusType=OrderBookStatusType.OPEN;
-	
 	private Execution execution;
+	private Integer executionCount=0;
 	
 	public List<Order> getOrders() {
 		return orders;
@@ -40,6 +40,12 @@ public class OrderBook {
 	public void addExecution(Execution execution) {
 		this.execution=execution;
 		this.execution.execute(this.orders);
+	}
+	public Integer getExecutionCount() {
+		return executionCount;
+	}
+	public void setExecutionCount(Integer executionCount) {
+		this.executionCount = executionCount;
 	}
 	@Override
 	public String toString() {

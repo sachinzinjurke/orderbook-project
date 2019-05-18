@@ -4,8 +4,8 @@ import java.util.List;
 
 public class Execution {
 	
-	private Integer quantity;
-	private Double price;
+	private Integer quantity=10;
+	private Double price=20.00;
 	
 	public Integer getQuantity() {
 		return quantity;

@@ -16,7 +16,7 @@ public class OrderBookService {
 		this.orderBookQueue=orderBookQueue;
 	}
 	
-	public void addInstrumentForProcessing(ExecutionContext executionContext) {
+	public void addOrderBookForProcessing(ExecutionContext executionContext) {
 		logger.info("adding instrument for executuion ");
 		this.orderBookQueue.add(executionContext);
 		logger.info("Added instrument for executuion ");

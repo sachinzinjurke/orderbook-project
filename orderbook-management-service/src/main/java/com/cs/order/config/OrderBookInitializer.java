@@ -40,7 +40,7 @@ public class OrderBookInitializer implements ApplicationListener<ContextRefreshe
 		};
 		Stream.generate(orderSupplier).peek((orderInstruId)->{
 			logger.info("Processing order :: "+ orderInstruId);
-		}).limit(50)
+		}).limit(15)
 		.forEach((order)->{
 			logger.info("###########Cached Book#########",Cache.INSTRUMENT_CACHE.get(order.getInstrumentId()).getOrders().add(order));
 			//logger.info("###########Cached Book#########",instrumentMap.get(order.getInstrumentId()).getOrders().add(order));
@@ -48,7 +48,7 @@ public class OrderBookInitializer implements ApplicationListener<ContextRefreshe
 		
 		Stream.generate(orderSupplier).peek((orderInstruId)->{
 			logger.info("Processing order :: "+ orderInstruId);
-		}).limit(50)
+		}).limit(15)
 		.forEach((order)->{
 			logger.info("###########Cached Book#########",Cache.INSTRUMENT_CACHE_MAP.get(order.getInstrumentId()).getOrdreBook().add(order));
 			//logger.info("###########Cached Book#########",instrumentMap.get(order.getInstrumentId()).getOrders().add(order));

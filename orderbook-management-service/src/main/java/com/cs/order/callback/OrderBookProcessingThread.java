@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cs.core.ExecutionContext;
+import com.cs.order.rules.OrderBookRuleCollection;
 
 public class OrderBookProcessingThread implements Runnable{
 	
@@ -15,6 +16,8 @@ public class OrderBookProcessingThread implements Runnable{
 	private Boolean isAlive=true;
 
 	private BlockingQueue<ExecutionContext>orderBookQueue;
+	
+	private OrderBookRuleCollection orderBookRuleCollection;
 	
 	public OrderBookProcessingThread(BlockingQueue<ExecutionContext>orderBookQueue) {
 		this.orderBookQueue=orderBookQueue;
@@ -35,6 +38,8 @@ public class OrderBookProcessingThread implements Runnable{
 				try {
 					ExecutionContext executionContext = orderBookQueue.poll(100,TimeUnit.MILLISECONDS);
 					logger.info("successfully fetched executionContext from the queue");
+					logger.info("Processing execution context with quantity : {} and price : {}  ",executionContext.getExecution().getQuantity(),executionContext.getExecution().getPrice());
+					this.orderBookRuleCollection.processRules(executionContext);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -50,6 +55,12 @@ public class OrderBookProcessingThread implements Runnable{
 
 	public void setIsAlive(Boolean isAlive) {
 		this.isAlive = isAlive;
+	}
+	public OrderBookRuleCollection getOrderBookRuleCollection() {
+		return orderBookRuleCollection;
+	}
+	public void setOrderBookRuleCollection(OrderBookRuleCollection orderBookRuleCollection) {
+		this.orderBookRuleCollection = orderBookRuleCollection;
 	}
 	
 
