@@ -36,9 +36,11 @@ Assumption:
  6. Below are stats url for order book:
  
  	User can get all the valid and invalid orders related stats
+	
  	http://localhost:8080/instruments/getvaliditystats/1
 	
 	User can get the order book stats like biggest order, smallest order
+	
 	http://localhost:8080/instruments/getorderbookstats/1
     
  6. Order book Execution is kept constant for all executions and its quantity is set to 10 and price is 20.00 
