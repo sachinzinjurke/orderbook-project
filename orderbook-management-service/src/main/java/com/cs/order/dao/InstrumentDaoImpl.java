@@ -1,5 +1,6 @@
 package com.cs.order.dao;
 
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +13,8 @@ import com.cs.core.Instrument;
 import com.cs.core.Order;
 import com.cs.order.constants.Cache;
 import com.cs.order.modal.OrderBookStatus;
+import com.cs.order.stats.OrderBookSummaryStats;
+import com.cs.order.stats.OrderBookValidityStats;
 
 public class InstrumentDaoImpl implements InstrumentDAO {
 
@@ -22,12 +25,6 @@ public class InstrumentDaoImpl implements InstrumentDAO {
 		logger.info("Fetching all instrument ");
 		List<Instrument> instrumentList = Cache.INSTRUMENT_CACHE_MAP.values().stream().collect(Collectors.toList());
 		return instrumentList;
-		/*
-		 * List<Instrument> instruments =
-		 * Cache.INSTRUMENT_CACHE.entrySet().stream().sorted(Comparator.comparing(e ->
-		 * e.getKey())) .map(e -> new Instrument(e.getKey(),
-		 * e.getValue())).collect(Collectors.toList()); return instruments;
-		 */
 
 	}
 
@@ -60,4 +57,76 @@ public class InstrumentDaoImpl implements InstrumentDAO {
 		return limitOrders;
 	}
 
+	@Override
+	public OrderBookSummaryStats getInstrumentOrderBookStats(int instrumentId) {
+		logger.info("Fetching order book summary stats for instrument id {}", instrumentId);
+		Instrument instrument = Cache.INSTRUMENT_CACHE_MAP.get(instrumentId);
+		IntSummaryStatistics statistics = instrument.getOrdreBook().getOrders().stream()
+		        .mapToInt(Order::getQuantity)
+		        .summaryStatistics();
+		 
+		int min = statistics.getMin();
+		int max = statistics.getMax();
+		long total=statistics.getSum();
+		long count=statistics.getCount();
+		OrderBookSummaryStats stats=new OrderBookSummaryStats();
+		stats.setSmallestOrderInBook(min);
+		stats.setBiggestOrderInBook(max);
+		stats.setTotalOrderCount(count);
+		stats.setTotalOrderBookQuantityCount(total);
+		return stats;
+	}
+
+	@Override
+	public OrderBookValidityStats getInstrumentValidInvalidOrderBookStats(int instrumentId) {
+		logger.info("Fetching valid invalid order book summary stats for instrument id {}", instrumentId);
+		Instrument instrument = Cache.INSTRUMENT_CACHE_MAP.get(instrumentId);
+		IntSummaryStatistics statistics = instrument.getOrdreBook().getOrders().stream()
+		        .mapToInt(Order::getQuantity)
+		        .summaryStatistics();
+		 
+		OrderBookValidityStats validInvalidStats=new OrderBookValidityStats();
+		validInvalidStats.setBiggestOrderInBook(statistics.getMax());
+		validInvalidStats.setSmallestOrderInBook(statistics.getMin());
+		
+		List<Order> inValidOrderList = instrument.getOrdreBook().getOrders().stream().filter((order)->{
+			if(order.getOrderType()==OrderType.LIMIT) {
+				if(order.getPrice() < 20.00) {
+					return true;
+				}else {
+					return false;
+				}
+				
+			}else{
+				return false;
+			}
+		}
+		).collect(Collectors.toList());
+		
+		List<Order> validOrderList = instrument.getOrdreBook().getOrders().stream().filter((order)->{
+			if(order.getOrderType()==OrderType.LIMIT) {
+				if(order.getPrice() > 20.00) {
+					return true;
+				}else {
+					return false;
+				}
+				
+			}else{
+				return false;
+			}
+		}
+		).collect(Collectors.toList());
+		
+		validInvalidStats.setValidOrders(validOrderList);
+		validInvalidStats.setInvalidOrders(inValidOrderList);
+		
+		Integer orderBookDemandQuantity=validOrderList.stream().map(order->order.getQuantity())
+		.collect(Collectors.summingInt(Integer::intValue));
+		
+		validInvalidStats.setOrderBookDemand(orderBookDemandQuantity);
+		
+		logger.info("Finished valid invalid order book summary stats for instrument id {}", instrumentId);
+		
+	return validInvalidStats;
+	}	
 }

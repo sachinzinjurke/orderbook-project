@@ -1,7 +1,6 @@
 package com.cs.order.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,11 +13,12 @@ import com.cs.core.Execution;
 import com.cs.core.ExecutionContext;
 import com.cs.core.Instrument;
 import com.cs.core.Order;
-import com.cs.core.OrderBook;
 import com.cs.order.constants.Cache;
 import com.cs.order.dao.InstrumentDAO;
 import com.cs.order.modal.OrderBookStatus;
 import com.cs.order.service.OrderBookService;
+import com.cs.order.stats.OrderBookSummaryStats;
+import com.cs.order.stats.OrderBookValidityStats;
 
 @RestController
 public class InstrumentController {
@@ -38,6 +38,17 @@ public class InstrumentController {
 		Instrument instrument=instrumentDAO.getInstrument(id);
 		return instrument;
 	}
+	@GetMapping("/instruments/getorderbookstats/{id}")
+	public OrderBookSummaryStats getInstrumentOrderBookStats(@PathVariable Integer id) {
+		OrderBookSummaryStats orderBookStats =instrumentDAO.getInstrumentOrderBookStats(id);
+		return orderBookStats;
+	}
+	@GetMapping("/instruments/getvaliditystats/{id}")
+	public OrderBookValidityStats getInstrumentOrderBookValidityStats(@PathVariable Integer id) {
+		OrderBookValidityStats orderBookValidityStats =instrumentDAO.getInstrumentValidInvalidOrderBookStats(id);
+		return orderBookValidityStats;
+	}
+	
 	@GetMapping("/instruments/getlimitorders/{id}")
 	public  List<Order> getLimitOrders(@PathVariable Integer id) {
 		List<Order> limitOrders=instrumentDAO.getLimitOrders(id);

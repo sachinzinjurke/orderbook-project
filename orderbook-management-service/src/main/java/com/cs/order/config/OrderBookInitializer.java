@@ -38,13 +38,6 @@ public class OrderBookInitializer implements ApplicationListener<ContextRefreshe
 		Supplier<Order> orderSupplier= ()->{
 			return InitializerUtils.createRandomOrder();
 		};
-		Stream.generate(orderSupplier).peek((orderInstruId)->{
-			logger.info("Processing order :: "+ orderInstruId);
-		}).limit(100)
-		.forEach((order)->{
-			logger.info("###########Cached Book#########",Cache.INSTRUMENT_CACHE.get(order.getInstrumentId()).getOrders().add(order));
-			//logger.info("###########Cached Book#########",instrumentMap.get(order.getInstrumentId()).getOrders().add(order));
-				});
 		
 		Stream.generate(orderSupplier).peek((orderInstruId)->{
 			logger.info("Processing order :: "+ orderInstruId);
@@ -56,7 +49,6 @@ public class OrderBookInitializer implements ApplicationListener<ContextRefreshe
 		
 		logger.info("###########Pre-Loading Instruments done#########");
 		logger.info("###########Orders Loaded Into OrderBook#########");
-		Cache.INSTRUMENT_CACHE.entrySet().stream().forEach(entry->System.out.println(entry));
 		Cache.INSTRUMENT_CACHE_MAP.entrySet().stream().forEach(entry->System.out.println(entry));
 		OrderBookProcessingThread orderBookProcessingThread=(OrderBookProcessingThread)event.getApplicationContext().getBean("orderBookProcessingThread");
 		ExecutorService executorService=Executors.newSingleThreadExecutor();
